@@ -1,44 +1,69 @@
-#include <math.h>
-#include <vector> 
-#include <stdio.h>
-#include <iostream>
+#include <SFML/Graphics.hpp>
+#include <vector>
+#include <random>
 
-using namespace std;
+// Function to generate nPoints based on the seed
+std::vector<sf::Vector2f> generatePoints(int seed, int width, int height, int nPoints) {
+    std::vector<sf::Vector2f> points;
+    std::mt19937 rng(seed); // Initialize random number generator with seed
+    std::uniform_int_distribution<int> distX(0, width);
+    std::uniform_int_distribution<int> distY(0, height);
 
-const int grid_x = 180;
-const int grid_y = 100;
-const int properties = 1;
-
-const int creatureNo = 1000;
-
-vector<vector<int>> creatures;
-vector<vector<int>> creatures_next;
-
-int map_grid[grid_x][grid_y][properties] = { 0 };
-
-double perlinNoise(double x, double y) {
-    return (sin(x) + cos(y)) / 2.0;
-}
-
-void generateTerrain(int seed) {
-    srand(seed);
-    for (int x = 0;x < grid_x;++x) {
-        for (int y = 0;grid_y;++y) {
-            double nx = (double)x / grid_x - 0.5, ny = (double)y / grid_y - 0.5;
-            map_grid[x][y][0] = (int)(perlinNoise(nx, ny) * 100);
-        }
+    for (int i = 0; i < nPoints; ++i) {
+        points.emplace_back(distX(rng), distY(rng));
     }
+
+    return points;
 }
 
 int main() {
-    int seed = 69;
+    int seed = 156;
 
-    // generates terrain based on seed
-    generateTerrain(seed);
+    // SFML window settings
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 8;
+    sf::RenderWindow window(sf::VideoMode(1280, 720), "Main menu", sf::Style::Default, settings);
+    window.setFramerateLimit(144); // set frame rate limit
+    window.setVerticalSyncEnabled(true); // enable vertical sync
 
-    // Copy the updated array to the original array
-    creatures = creatures_next;
+    // Generate 5 points based on the seed 
+    std::vector<sf::Vector2f> points = generatePoints(seed, window.getSize().x, window.getSize().y, 5);
+
+    int colorR = 0, colorG = 0, colorB = 0;
+
+    while (window.isOpen()) {
+        // Update
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) { // mouse events (left)
+                points = generatePoints(rand(), window.getSize().x, window.getSize().y, 5); // Regenerate points with new seed
+
+            }
+        }
+
+        // Draw the map
+        window.clear(sf::Color::White);
+
+        // Draw the points
+        for (const auto& point : points) {
+            sf::RectangleShape rectangle(sf::Vector2f(10, 10)); // Create a rectangle of size 10x10
+            rectangle.setPosition(point);
+            rectangle.setFillColor(sf::Color(colorR % 256, colorG % 256, colorB % 256));
+            colorR += 60;
+            colorG += 80;
+            colorB += 70;
+            window.draw(rectangle);
+        }
+
+        colorR = 0;
+        colorG = 0;
+        colorB = 0;
+
+        window.display();
+    }
 
     return 0;
-
 }
