@@ -1,23 +1,10 @@
 #include <SFML/Graphics.hpp>
-#include <vector>
 #include <random>
+#include <iostream>
 
-// Function to generate nPoints based on the seed
-std::vector<sf::Vector2f> generatePoints(int seed, int width, int height, int nPoints) {
-    std::vector<sf::Vector2f> points;
-    std::mt19937 rng(seed); // Initialize random number generator with seed
-    std::uniform_int_distribution<int> distX(0, width);
-    std::uniform_int_distribution<int> distY(0, height);
-
-    for (int i = 0; i < nPoints; ++i) {
-        points.emplace_back(distX(rng), distY(rng));
-    }
-
-    return points;
-}
+using namespace std;
 
 int main() {
-    int seed = 156;
 
     // SFML window settings
     sf::ContextSettings settings;
@@ -26,43 +13,74 @@ int main() {
     window.setFramerateLimit(144); // set frame rate limit
     window.setVerticalSyncEnabled(true); // enable vertical sync
 
-    // Generate 5 points based on the seed 
-    std::vector<sf::Vector2f> points = generatePoints(seed, window.getSize().x, window.getSize().y, 5);
+    // initialize data
+    int squareSize = 18;
+    int padding = 1;
+    int tileSize = squareSize + padding * 2;
 
-    int colorR = 0, colorG = 0, colorB = 0;
+    int xTiles = window.getSize().x / tileSize;
+    int yTiles = window.getSize().y / tileSize;
+
+    // Create the map with properties.
+    int map[128][72][10];
+    // x and y axis the first 2 and third one contains details about each tile.
+
+    // set each tile on the map randomly to either water or land.
+    for (int i = 0;i < xTiles;i++) {
+        for (int j = 0;j < yTiles;j++) {
+            map[i][j][0] = rand() % 2;
+        }
+    }
+
+    // frames counter
+    int nFrames = 0;
+
+    // water color reducer
+    int waterGradientConstant = 0;
 
     while (window.isOpen()) {
-        // Update
+
+        // frame counter
+        nFrames++;
+
+        // update water color every 144 frames
+        if (nFrames == 144 && waterGradientConstant < 15) {
+            waterGradientConstant++;
+        }
+
+        // Event handling
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 window.close();
             }
-            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) { // mouse events (left)
-                points = generatePoints(rand(), window.getSize().x, window.getSize().y, 5); // Regenerate points with new seed
-
-            }
         }
 
         // Draw the map
-        window.clear(sf::Color::White);
+        window.clear(sf::Color::Black);
 
-        // Draw the points
-        for (const auto& point : points) {
-            sf::RectangleShape rectangle(sf::Vector2f(10, 10)); // Create a rectangle of size 10x10
-            rectangle.setPosition(point);
-            rectangle.setFillColor(sf::Color(colorR % 256, colorG % 256, colorB % 256));
-            colorR += 60;
-            colorG += 80;
-            colorB += 70;
-            window.draw(rectangle);
+        for (int x = 0; x < xTiles; x++) {
+            for (int y = 0; y < yTiles; y++) {
+                // Draw the tile
+                sf::RectangleShape tile(sf::Vector2f(squareSize, squareSize));
+                tile.setPosition(x * tileSize + padding, y * tileSize + padding);
+                // water can dry and turn into land
+                if (map[x][y][0] == 0 && 1) {
+                    tile.setFillColor(sf::Color(waterGradientConstant * 17, 121 + waterGradientConstant * 4, 255 - (waterGradientConstant * 16)));
+                }
+                else {
+                    tile.setFillColor(sf::Color(255, 181, 15));
+                }
+                window.draw(tile);
+            }
         }
 
-        colorR = 0;
-        colorG = 0;
-        colorB = 0;
-
         window.display();
+
+        // reset frame counter
+        if (nFrames == 144) {
+            nFrames = 0;
+        }
     }
 
     return 0;
