@@ -28,7 +28,8 @@ int main() {
     // set each tile on the map randomly to either water or land.
     for (int i = 0;i < xTiles;i++) {
         for (int j = 0;j < yTiles;j++) {
-            map[i][j][0] = rand() % 2;
+            map[i][j][0] = rand() % 16; // water or land
+            map[i][j][1] = rand() % 3; // food
         }
     }
 
@@ -36,7 +37,7 @@ int main() {
     int nFrames = 0;
 
     // water color reducer
-    int waterGradientConstant = 0;
+    int waterGradientConstant = 0; // upto 15
 
     while (window.isOpen()) {
 
@@ -44,7 +45,7 @@ int main() {
         nFrames++;
 
         // update water color every 144 frames
-        if (nFrames == 144 && waterGradientConstant < 15) {
+        if (nFrames == 144 * 1) {
             waterGradientConstant++;
         }
 
@@ -59,19 +60,35 @@ int main() {
         // Draw the map
         window.clear(sf::Color::Black);
 
-        for (int x = 0; x < xTiles; x++) {
-            for (int y = 0; y < yTiles; y++) {
+        for (int i = 0; i < xTiles; i++) {
+            for (int j = 0; j < yTiles; j++) {
                 // Draw the tile
                 sf::RectangleShape tile(sf::Vector2f(squareSize, squareSize));
-                tile.setPosition(x * tileSize + padding, y * tileSize + padding);
-                // water can dry and turn into land
-                if (map[x][y][0] == 0 && 1) {
-                    tile.setFillColor(sf::Color(waterGradientConstant * 17, 121 + waterGradientConstant * 4, 255 - (waterGradientConstant * 16)));
+                tile.setPosition(i * tileSize + padding, j * tileSize + padding);
+                // // water can dry and turn into land
+                if (nFrames == 144 * 1 && map[i][j][0] < 15) {
+                    map[i][j][0]++;
                 }
-                else {
-                    tile.setFillColor(sf::Color(255, 181, 15));
-                }
+                // if (map[x][y][0] == 0 && 1) {
+                tile.setFillColor(sf::Color(map[i][j][0] * 17, 121 + map[i][j][0] * 4, 255 - (map[i][j][0] * 16)));
+                // }
+                // else {
+                //     tile.setFillColor(sf::Color(255, 181, 15));
+                // }
+
                 window.draw(tile);
+            }
+        }
+
+        for (int i = 0; i < xTiles; i++) {
+            for (int j = 0;j < yTiles;j++) {
+                // Draw the food
+                if (map[i][j][1] == 1) {
+                    sf::CircleShape food(3);
+                    food.setFillColor(sf::Color::Green);
+                    food.setPosition(i * tileSize + padding + 6, j * tileSize + padding + 6);
+                    window.draw(food);
+                }
             }
         }
 
