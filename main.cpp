@@ -1,6 +1,7 @@
 #include <sfml/Graphics.hpp>
 #include <iostream>
 #include <vector>
+#include "textures.h"
 
 int assign_food(int terrain_type) {
     if (terrain_type == 0) { // plains
@@ -160,6 +161,8 @@ int main() {
     else {
         std::cerr << "failed to load terrain_map.png" << std::endl;
     }
+    class textures textures;
+    textures.Load();
 
     // Get the terrain map size
     sf::Vector2u terrain_map_size = terrain_map.getSize();
@@ -209,7 +212,7 @@ int main() {
     // x = creature number, 0 = x_cordinates, 2 = y_cordinates, 3 = food, 4 = water, 5 = health, 6 = age
     std::vector<std::vector<int>> creatures;
 
-    int tile_size = 40;
+    int tile_size = 64;
 
     int window_size_x = grid_size_x * tile_size;
     int window_size_y = grid_size_y * tile_size;
@@ -217,7 +220,7 @@ int main() {
     // display window setup
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
-    sf::RenderWindow window(sf::VideoMode(window_size_x, window_size_y), "Creature Sim");
+    sf::RenderWindow window(sf::VideoMode(1920, 1080), "Creature Sim", sf::Style::Fullscreen, settings);
     window.setFramerateLimit(144); // set frame rate limit
     window.setVerticalSyncEnabled(true); // enable vertical sync
 
@@ -318,6 +321,11 @@ int main() {
                 }
                 window.draw(rectangle);
                 window.draw(water);
+            }
+        }
+        for (unsigned int i = 0;i < terrain_map_size.x;i++) {
+            for (unsigned int j = 0;j < terrain_map_size.y;j++) {
+                textures.Draw(window, terrain[i][j][2], terrain[i][j][0], i, j);
             }
         }
         window.display();
