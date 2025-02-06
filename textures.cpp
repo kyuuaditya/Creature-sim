@@ -70,6 +70,32 @@ void textures::Load() {
     else {
         std::cout << "hilly_tree_fruits texture failed to loaded!" << std::endl;
     }
+
+    // textures for bushes
+    if (plains_bushes.loadFromFile("assets/bushes/plains_bushes.png")) { // plains bushes with fruits
+        plains_bushes_sprite.setTexture(plains_bushes);
+        plains_bushes_sprite.setTextureRect(sf::IntRect(0, 0, size_32, size_32));
+        std::cout << "plains_bushes texture loaded!" << std::endl;
+    }
+    else {
+        std::cout << "plains_tree_fruits texture failed to loaded!" << std::endl;
+    }
+    if (desert_bushes.loadFromFile("assets/bushes/desert_bushes.png")) { // desert bushes
+        desert_bushes_sprite.setTexture(desert_bushes);
+        desert_bushes_sprite.setTextureRect(sf::IntRect(0, 0, size_32, size_32));
+        std::cout << "desert_bushes texture loaded!" << std::endl;
+    }
+    else {
+        std::cout << "desert_bushes texture failed to loaded!" << std::endl;
+    }
+    if (jungle_bushes.loadFromFile("assets/bushes/jungle_bushes.png")) { // jungle bushes
+        jungle_bushes_sprite.setTexture(jungle_bushes);
+        jungle_bushes_sprite.setTextureRect(sf::IntRect(0, 0, size_32, size_32));
+        std::cout << "jungle_bushes texture loaded!" << std::endl;
+    }
+    else {
+        std::cout << "jungle_bushes texture failed to loaded!" << std::endl;
+    }
 }
 
 void textures::Draw(sf::RenderWindow& window, int terrain_type, int food_type, int i, int j) {
@@ -82,17 +108,29 @@ void textures::Draw(sf::RenderWindow& window, int terrain_type, int food_type, i
             plains_tree_sprite_fruits.setPosition(sf::Vector2f(i * 64, j * 64));
             window.draw(plains_tree_sprite_fruits);
         }
+        if (food_type == 2) { // bush
+            plains_bushes_sprite.setPosition(sf::Vector2f(i * 64 + 16, j * 64 + 16));
+            window.draw(plains_bushes_sprite);
+        }
     }
     if (terrain_type == 1) { // desert
+        if (food_type == 2) { // bush
+            desert_bushes_sprite.setPosition(sf::Vector2f(i * 64 + 16, j * 64 + 16));
+            window.draw(desert_bushes_sprite);
+        }
     }
     if (terrain_type == 2) { // jungle
         if (food_type == 0) { // tree
             jungle_tree_sprite.setPosition(sf::Vector2f(i * 64, j * 64));
             window.draw(jungle_tree_sprite);
         }
-        if (food_type == 1) { // tree
+        if (food_type == 1) { // tree with fruits
             jungle_tree_sprite_fruits.setPosition(sf::Vector2f(i * 64, j * 64));
             window.draw(jungle_tree_sprite_fruits);
+        }
+        if (food_type == 2) { // bush
+            jungle_bushes_sprite.setPosition(sf::Vector2f(i * 64 + 16, j * 64 + 16));
+            window.draw(jungle_bushes_sprite);
         }
     }
     if (terrain_type == 3) { // snow
@@ -100,7 +138,7 @@ void textures::Draw(sf::RenderWindow& window, int terrain_type, int food_type, i
             snow_tree_sprite.setPosition(sf::Vector2f(i * 64, j * 64));
             window.draw(snow_tree_sprite);
         }
-        if (food_type == 1) { // tree
+        if (food_type == 1) { // tree with fruits
             snow_tree_sprite_fruits.setPosition(sf::Vector2f(i * 64, j * 64));
             window.draw(snow_tree_sprite_fruits);
         }
@@ -110,7 +148,7 @@ void textures::Draw(sf::RenderWindow& window, int terrain_type, int food_type, i
             hilly_tree_sprite.setPosition(sf::Vector2f(i * 64, j * 64));
             window.draw(hilly_tree_sprite);
         }
-        if (food_type == 1) { // tree
+        if (food_type == 1) { // tree with fruits
             hilly_tree_sprite_fruits.setPosition(sf::Vector2f(i * 64, j * 64));
             window.draw(hilly_tree_sprite_fruits);
         }

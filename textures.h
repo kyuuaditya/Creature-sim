@@ -14,7 +14,12 @@ private:
     sf::Texture snow_tree_fruits;
     sf::Texture hilly_tree_fruits;
 
-    float size_64 = 64;
+    sf::Texture plains_bushes;
+    sf::Texture desert_bushes;
+    sf::Texture jungle_bushes;
+
+    int size_64 = 64;
+    int size_32 = 32;
 
 public:
     sf::Sprite plains_tree_sprite;
@@ -26,6 +31,10 @@ public:
     sf::Sprite jungle_tree_sprite_fruits;
     sf::Sprite snow_tree_sprite_fruits;
     sf::Sprite hilly_tree_sprite_fruits;
+
+    sf::Sprite plains_bushes_sprite;
+    sf::Sprite desert_bushes_sprite;
+    sf::Sprite jungle_bushes_sprite;
 
 public:
     void Load();
