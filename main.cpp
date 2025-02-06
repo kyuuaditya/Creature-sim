@@ -2,6 +2,88 @@
 #include <iostream>
 #include <vector>
 
+int assign_food(int terrain_type) {
+    if (terrain_type == 0) { // plains
+        int roullete = rand() % 100;
+        if (roullete < 5) {
+            return 0; // Tree
+        }
+        else if (roullete < 8) {
+            return 1; // Tree with fruits
+        }
+        else if (roullete < 23) {
+            return 2; // Bush
+        }
+        else if (roullete < 33) {
+            return 3; // Bush with fruits
+        }
+        else if (roullete < 35) {
+            return 4; // Plants
+        }
+        else if (roullete < 36) {
+            return 5; // Plants with fruits
+        }
+        else {
+            return 6; // Nothing
+        }
+    }
+    else if (terrain_type == 1) { // desert
+        int roullete = rand() % 100;
+        if (roullete < 10) {
+            return 2; // bush
+        }
+        else {
+            return 6; // nothing
+        }
+    }
+    else if (terrain_type == 2) { // jungle
+        int roullete = rand() % 100;
+        if (roullete < 20) {
+            return 0; // Tree
+        }
+        else if (roullete < 35) {
+            return 1; // Tree with fruits
+        }
+        else if (roullete < 55) {
+            return 2; // Bush
+        }
+        else if (roullete < 75) {
+            return 3; // Bush with fruits
+        }
+        else {
+            return 6; // Nothing
+        }
+    }
+    else if (terrain_type == 3) { // snow
+        int roullete = rand() % 100;
+        if (roullete < 7) {
+            return 0; // Tree
+        }
+        else if (roullete < 12) {
+            return 1; // Tree with fruits
+        }
+        else {
+            return 6; // Nothing
+        }
+    }
+    else if (terrain_type == 4) { // hilly
+        int roullete = rand() % 100;
+        if (roullete < 10) {
+            return 0; // Tree
+        }
+        else if (roullete < 30) {
+            return 1; // Tree with fruits
+        }
+        else if (roullete < 42) {
+            return 2; // Bush
+        }
+        else {
+            return 6; // Nothing
+        }
+    }
+    return 6;
+}
+
 int main() {
     // Load the terrain map
     sf::Image terrain_map;
@@ -27,18 +109,23 @@ int main() {
             sf::Color pixel = terrain_map.getPixel(x, y);
             if (pixel.r == 168 && pixel.g == 230 && pixel.b == 29) {
                 terrain[x][y][2] = 0; // normal terrain
+                terrain[x][y][0] = assign_food(0);
             }
             else if (pixel.r == 255 && pixel.g == 242 && pixel.b == 0) {
                 terrain[x][y][2] = 1; // desert terrain
+                terrain[x][y][0] = assign_food(1);
             }
             else if (pixel.r == 34 && pixel.g == 177 && pixel.b == 76) {
                 terrain[x][y][2] = 2; // forest terrain
+                terrain[x][y][0] = assign_food(2);
             }
             else if (pixel.r == 0 && pixel.g == 183 && pixel.b == 239) {
                 terrain[x][y][2] = 3; // snow terrain
+                terrain[x][y][0] = assign_food(3);
             }
             else if (pixel.r == 156 && pixel.g == 90 && pixel.b == 60) {
                 terrain[x][y][2] = 4; // water terrain
+                terrain[x][y][0] = assign_food(4);
             }
         }
     }
@@ -95,6 +182,40 @@ int main() {
                     rectangle.setFillColor(sf::Color(156, 90, 60));
                 }
                 window.draw(rectangle);
+            }
+        }
+
+        // displaying the foods
+        for (unsigned int y = 0; y < terrain_map_size.y;y++) {
+            for (unsigned int x = 0; x < terrain_map_size.x;x++) {
+                sf::RectangleShape rectangle(sf::Vector2f(tile_size / 5, tile_size / 5)); // outline of food
+                sf::RectangleShape food(sf::Vector2f(tile_size / 5 - 2, tile_size / 5 - 2)); // food
+                rectangle.setPosition(x * tile_size + 1, y * tile_size + 1);
+                food.setPosition(x * tile_size + 2, y * tile_size + 2);
+                rectangle.setFillColor(sf::Color(255, 255, 255));
+                if (terrain[x][y][0] == 0) {
+                    food.setFillColor(sf::Color(127, 0, 127));
+                }
+                else if (terrain[x][y][0] == 1) {
+                    food.setFillColor(sf::Color(255, 0, 0));
+                }
+                else if (terrain[x][y][0] == 2) {
+                    food.setFillColor(sf::Color(255, 63, 0));
+                }
+                else if (terrain[x][y][0] == 3) {
+                    food.setFillColor(sf::Color(255, 127, 0));
+                }
+                else if (terrain[x][y][0] == 4) {
+                    food.setFillColor(sf::Color(255, 127, 255));
+                }
+                else if (terrain[x][y][0] == 5) {
+                    food.setFillColor(sf::Color(127, 127, 127));
+                }
+                else if (terrain[x][y][0] == 6) {
+                    food.setFillColor(sf::Color(255, 255, 255));
+                }
+                window.draw(rectangle);
+                window.draw(food);
             }
         }
         window.display();
