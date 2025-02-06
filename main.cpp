@@ -79,7 +79,7 @@ int assign_food(int terrain_type) {
             return 1; // Tree with fruits
         }
         else if (roullete < 42) {
-            return 2; // Bush
+            return 3; // Bush with fruits
         }
         else {
             return 6; // Nothing
