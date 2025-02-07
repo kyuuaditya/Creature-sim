@@ -148,6 +148,83 @@ int assign_water(int terrain_type) {
     return 1;
 }
 
+// initialize food level based on terrain and food type
+int initialize_food_level(int food_type, int terrain_type) {
+    if (terrain_type == 0) {
+        if (food_type == 0) {
+            return 8;
+        }
+        else if (food_type == 1) {
+            return 5;
+        }
+        else if (food_type == 2) {
+            return 3;
+        }
+        else if (food_type == 3) {
+            return 2;
+        }
+        else {
+            return 0;
+        }
+    }
+    else if (terrain_type == 1) {
+        if (food_type == 2) {
+            return 2;
+        }
+        else if (food_type == 3) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    else if (terrain_type == 2) {
+        if (food_type == 0) {
+            return 9;
+        }
+        else if (food_type == 1) {
+            return 6;
+        }
+        else if (food_type == 2) {
+            return 4;
+        }
+        else if (food_type == 3) {
+            return 3;
+        }
+        else {
+            return 0;
+        }
+    }
+    else if (terrain_type == 3) {
+        if (food_type == 0) {
+            return 6;
+        }
+        else if (food_type == 1) {
+            return 3;
+        }
+        else {
+            return 0;
+        }
+    }
+    else if (terrain_type == 4) {
+        if (food_type == 0) {
+            return 9;
+        }
+        else if (food_type == 1) {
+            return 6;
+        }
+        else if (food_type == 3) {
+            return 3;
+        }
+        else {
+            return 0;
+        }
+    }
+    else {
+        return 0;
+    }
+}
+
 int main() {
     srand(time(0));
     // Load the terrain map
@@ -175,29 +252,34 @@ int main() {
         for (unsigned int x = 0; x < terrain_map_size.x;x++) {
             sf::Color pixel = terrain_map.getPixel(x, y);
             if (pixel.r == 168 && pixel.g == 230 && pixel.b == 29) {
-                terrain[x][y][0] = assign_food(0);
-                terrain[x][y][1] = assign_water(0);
                 terrain[x][y][2] = 0; // normal terrain
+                terrain[x][y][0] = assign_food(terrain[x][y][2]);
+                terrain[x][y][1] = assign_water(terrain[x][y][2]);
+                terrain[x][y][3] = initialize_food_level(terrain[x][y][0], terrain[x][y][2]); // food level
             }
             else if (pixel.r == 255 && pixel.g == 242 && pixel.b == 0) {
-                terrain[x][y][0] = assign_food(1);
-                terrain[x][y][1] = assign_water(1);
                 terrain[x][y][2] = 1; // desert terrain
+                terrain[x][y][0] = assign_food(terrain[x][y][2]);
+                terrain[x][y][1] = assign_water(terrain[x][y][2]);
+                terrain[x][y][3] = initialize_food_level(terrain[x][y][0], terrain[x][y][2]);
             }
             else if (pixel.r == 34 && pixel.g == 177 && pixel.b == 76) {
-                terrain[x][y][0] = assign_food(2);
-                terrain[x][y][1] = assign_water(2);
                 terrain[x][y][2] = 2; // forest terrain
+                terrain[x][y][0] = assign_food(terrain[x][y][2]);
+                terrain[x][y][1] = assign_water(terrain[x][y][2]);
+                terrain[x][y][3] = initialize_food_level(terrain[x][y][0], terrain[x][y][2]);
             }
             else if (pixel.r == 0 && pixel.g == 183 && pixel.b == 239) {
-                terrain[x][y][0] = assign_food(3);
-                terrain[x][y][1] = assign_water(3);
                 terrain[x][y][2] = 3; // snow terrain
+                terrain[x][y][0] = assign_food(terrain[x][y][2]);
+                terrain[x][y][1] = assign_water(terrain[x][y][2]);
+                terrain[x][y][3] = initialize_food_level(terrain[x][y][0], terrain[x][y][2]);
             }
             else if (pixel.r == 156 && pixel.g == 90 && pixel.b == 60) {
-                terrain[x][y][0] = assign_food(4);
-                terrain[x][y][1] = assign_water(4);
                 terrain[x][y][2] = 4; // water terrain
+                terrain[x][y][0] = assign_food(terrain[x][y][2]);
+                terrain[x][y][1] = assign_water(terrain[x][y][2]);
+                terrain[x][y][3] = initialize_food_level(terrain[x][y][0], terrain[x][y][2]);
             }
             else {
                 std::cout << "miss-colored pixel at: " << x << ", " << y << std::endl;
@@ -222,7 +304,7 @@ int main() {
     window.setVerticalSyncEnabled(true); // enable vertical sync
 
     sf::sleep(sf::milliseconds(100));
-    int seconds = 0;
+    int ticks = 0;
     sf::Clock clock;
     sf::Time elapsedTime;
 
@@ -239,16 +321,22 @@ int main() {
     statBar.setFillColor(sf::Color::White);
     statBar.setPosition(10, window.getSize().y - 30);
 
+    int go_next_itr = 0;
+
     // main loop
     while (window.isOpen()) {
         elapsedTime += clock.restart();
-        if (elapsedTime.asSeconds() >= 1.0f) {
-            seconds++;
-            elapsedTime -= sf::seconds(1.0f);
+        if (elapsedTime.asSeconds() >= 0.1f) {
+            go_next_itr = 1;
+            ticks++;
+            elapsedTime -= sf::seconds(0.1f);
             // std::cout << "clock: " << seconds << std::endl;
 
             // Update stat bar text
-            statBar.setString("Time: " + std::to_string(seconds) + "s");
+            statBar.setString("Tick: " + std::to_string(ticks));
+        }
+        else {
+            go_next_itr = 0;
         }
 
         sf::Event event;
