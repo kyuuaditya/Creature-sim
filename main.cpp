@@ -150,75 +150,38 @@ int assign_water(int terrain_type) {
 
 // initialize food level based on terrain and food type
 int initialize_food_level(int food_type, int terrain_type) {
-    if (terrain_type == 0) {
-        if (food_type == 0) {
-            return 8;
-        }
-        else if (food_type == 1) {
-            return 5;
-        }
-        else if (food_type == 2) {
-            return 3;
-        }
-        else if (food_type == 3) {
-            return 2;
-        }
-        else {
-            return 0;
-        }
+    if (food_type == 0) {
+        return 8 + terrain_type_buff_calculator(terrain_type);
     }
-    else if (terrain_type == 1) {
-        if (food_type == 2) {
-            return 2;
-        }
-        else if (food_type == 3) {
-            return 1;
-        }
-        else {
-            return 0;
-        }
+    else if (food_type == 1) {
+        return 5 + terrain_type_buff_calculator(terrain_type);
     }
-    else if (terrain_type == 2) {
-        if (food_type == 0) {
-            return 9;
-        }
-        else if (food_type == 1) {
-            return 6;
-        }
-        else if (food_type == 2) {
-            return 4;
-        }
-        else if (food_type == 3) {
-            return 3;
-        }
-        else {
-            return 0;
-        }
+    else if (food_type == 2) {
+        return 3 + terrain_type_buff_calculator(terrain_type);
     }
-    else if (terrain_type == 3) {
-        if (food_type == 0) {
-            return 6;
-        }
-        else if (food_type == 1) {
-            return 3;
-        }
-        else {
-            return 0;
-        }
+    else if (food_type == 3) {
+        return 2 + terrain_type_buff_calculator(terrain_type);
     }
-    else if (terrain_type == 4) {
-        if (food_type == 0) {
-            return 9;
-        }
-        else if (food_type == 1) {
-            return 6;
-        }
-        else if (food_type == 3) {
-            return 3;
-        }
-        else {
-            return 0;
-        }
+    else {
+        return 0;
+    }
+}
+
+int terrain_type_buff_calculator(int terrain) {
+    if (terrain == 0) {
+        return 0;
+    }
+    else if (terrain == 1) {
+        return -1;
+    }
+    else if (terrain == 2) {
+        return 1;
+    }
+    else if (terrain == 3) {
+        return -2;
+    }
+    else if (terrain == 4) {
+        return 1;
     }
     else {
         return 0;
@@ -322,14 +285,18 @@ int main() {
     statBar.setPosition(10, window.getSize().y - 30);
 
     int go_next_itr = 0;
+    int food_reduction_counter = 0; // to be reset every 3 ticks
+    int tree_fruit_counter = 0; // to be reset every 1 ticks
+    int bush_fruit_counter = 0; // to be reset every 2 ticks
 
     // main loop
     while (window.isOpen()) {
         elapsedTime += clock.restart();
-        if (elapsedTime.asSeconds() >= 0.1f) {
+        float tick_length = 1.0f;
+        if (elapsedTime.asSeconds() >= tick_length) {
             go_next_itr = 1;
             ticks++;
-            elapsedTime -= sf::seconds(0.1f);
+            elapsedTime -= sf::seconds(tick_length);
             // std::cout << "clock: " << seconds << std::endl;
 
             // Update stat bar text
@@ -350,6 +317,44 @@ int main() {
                 }
             }
         }
+
+        // update the enviournment
+
+        // reduce food level every 3 ticks
+        if (go_next_itr == 1) {
+            for (unsigned int i = 0;i < terrain_map_size.x;i++) {
+                for (unsigned int j = 0;j < terrain_map_size.y;j++) {
+                    food_reduction_counter++;
+                    if (food_reduction_counter == 3) {
+                        if (terrain[i][j][3] > 0) {
+                            terrain[i][j][3] -= 1;
+                        }
+                        food_reduction_counter = 0;
+                    }
+                }
+            }
+        }
+
+        // increase food level based on food type
+        if (go_next_itr == 1) {
+            for (unsigned int i = 0;i < terrain_map_size.x;i++) {
+                for (unsigned int j = 0;j < terrain_map_size.y;j++) {
+                    tree_fruit_counter++;
+                    if (tree_fruit_counter == 1) {
+                        if (terrain[i][j][3] < 8 + terrain_type_buff_calculator(terrain[i][j][2])) {
+                            terrain[i][j][3] += 1;
+                        }
+                        tree_fruit_counter = 0;
+                    }
+                    // if (terrain[i][j][3] == 0) {
+                    //     terrain[i][j][0] = assign_food(terrain[i][j][2]);
+                    //     terrain[i][j][1] = assign_water(terrain[i][j][2]);
+                    //     terrain[i][j][3] = initialize_food_level(terrain[i][j][0], terrain[i][j][2]);
+                    // }
+                }
+            }
+        }
+
         window.clear();
         // displaying the terrain map
         for (unsigned int y = 0; y < terrain_map_size.y;y++) {
