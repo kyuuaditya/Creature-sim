@@ -9,20 +9,14 @@ int assign_food(int terrain_type) {
         if (roullete < 5) {
             return 0; // Tree
         }
-        else if (roullete < 8) {
+        else if (roullete < 10) {
             return 1; // Tree with fruits
         }
-        else if (roullete < 23) {
+        else if (roullete < 25) {
             return 2; // Bush
         }
-        else if (roullete < 33) {
-            return 3; // Bush with fruits
-        }
         else if (roullete < 35) {
-            return 4; // Plants
-        }
-        else if (roullete < 36) {
-            return 5; // Plants with fruits
+            return 3; // Bush with fruits
         }
         else {
             return 6; // Nothing
@@ -224,15 +218,39 @@ int main() {
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Creature Sim", sf::Style::Fullscreen, settings);
-    window.setFramerateLimit(144); // set frame rate limit
+    window.setFramerateLimit(60); // set frame rate limit
     window.setVerticalSyncEnabled(true); // enable vertical sync
 
     sf::sleep(sf::milliseconds(100));
-    unsigned long long int clock = 0;
+    int seconds = 0;
+    sf::Clock clock;
+    sf::Time elapsedTime;
+
+    // Font and text for the stat bar
+    sf::Font font;
+    if (!font.loadFromFile("assets/fonts/comicsans.ttf")) {
+        std::cerr << "Failed to load font" << std::endl;
+        return -1;
+    }
+
+    sf::Text statBar;
+    statBar.setFont(font);
+    statBar.setCharacterSize(24);
+    statBar.setFillColor(sf::Color::White);
+    statBar.setPosition(10, window.getSize().y - 30);
+
     // main loop
     while (window.isOpen()) {
-        // sf::sleep(sf::milliseconds(10));
-        // clock++;
+        elapsedTime += clock.restart();
+        if (elapsedTime.asSeconds() >= 1.0f) {
+            seconds++;
+            elapsedTime -= sf::seconds(1.0f);
+            // std::cout << "clock: " << seconds << std::endl;
+
+            // Update stat bar text
+            statBar.setString("Time: " + std::to_string(seconds) + "s");
+        }
+
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
@@ -263,46 +281,13 @@ int main() {
                     rectangle.setFillColor(sf::Color(0, 183, 239));
                 }
                 else if (terrain[x][y][2] == 4) {
-                    rectangle.setFillColor(sf::Color(156, 90, 60));
+                    rectangle.setFillColor(sf::Color(176, 110, 80));
                 }
                 window.draw(rectangle);
             }
         }
 
-        // displaying the foods
-        for (unsigned int y = 0; y < terrain_map_size.y;y++) {
-            for (unsigned int x = 0; x < terrain_map_size.x;x++) {
-                sf::RectangleShape rectangle(sf::Vector2f(tile_size / 5, tile_size / 5)); // outline of food
-                sf::RectangleShape food(sf::Vector2f(tile_size / 5 - 2, tile_size / 5 - 2)); // food
-                rectangle.setPosition(x * tile_size + 1, y * tile_size + 1);
-                food.setPosition(x * tile_size + 2, y * tile_size + 2);
-                rectangle.setFillColor(sf::Color(255, 255, 255));
-                if (terrain[x][y][0] == 0) {
-                    food.setFillColor(sf::Color(127, 0, 127));
-                }
-                else if (terrain[x][y][0] == 1) {
-                    food.setFillColor(sf::Color(255, 0, 0));
-                }
-                else if (terrain[x][y][0] == 2) {
-                    food.setFillColor(sf::Color(255, 63, 0));
-                }
-                else if (terrain[x][y][0] == 3) {
-                    food.setFillColor(sf::Color(255, 127, 0));
-                }
-                else if (terrain[x][y][0] == 4) {
-                    food.setFillColor(sf::Color(255, 127, 255));
-                }
-                else if (terrain[x][y][0] == 5) {
-                    food.setFillColor(sf::Color(127, 127, 127));
-                }
-                else if (terrain[x][y][0] == 6) {
-                    food.setFillColor(sf::Color(255, 255, 255));
-                }
-                window.draw(rectangle);
-                window.draw(food);
-            }
-        }
-        // displaying the foods
+        // displaying the water
         for (unsigned int y = 0; y < terrain_map_size.y;y++) {
             for (unsigned int x = 0; x < terrain_map_size.x;x++) {
                 sf::RectangleShape rectangle(sf::Vector2f(tile_size / 5 - 1, tile_size - 2)); // outline of food
@@ -331,6 +316,7 @@ int main() {
                 textures.Draw(window, terrain[i][j][2], terrain[i][j][0], i, j);
             }
         }
+        window.draw(statBar);
         window.display();
     }
 }

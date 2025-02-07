@@ -203,5 +203,4 @@ void textures::Draw(sf::RenderWindow& window, int terrain_type, int food_type, i
             window.draw(hilly_bushes_sprite_fruits);
         }
     }
-    // window.draw(plains_tree_sprite);
 }
