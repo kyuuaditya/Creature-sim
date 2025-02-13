@@ -470,16 +470,6 @@ int main() {
             }
         }
 
-        // if (go_next_itr == 1) {
-        //     std::cout << "food_level " << "max_food_level " << "food_type" << "terrain_type " << std::endl;
-        //     for (unsigned int i = 0;i < terrain_map_size.x;i++) {
-        //         for (unsigned int j = 0;j < terrain_map_size.y;j++) {
-        //             std::cout << terrain[i][j][3] << initialize_food_level(terrain[i][j][0], terrain[i][j][2]) << terrain[i][j][0] << terrain[i][j][2] << " ";
-        //         }
-        //         std::cout << std::endl;
-        //     }
-        //     std::cout << std::endl;
-        // }
 
         // display the food_types
         for (unsigned int i = 0;i < terrain_map_size.x;i++) {
