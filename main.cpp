@@ -6,127 +6,13 @@
 
 int debugging = 0;
 
-int assign_water(int terrain_type) {
-    int roullete = rand() % 100;
-    if (terrain_type == 0) { // plains
-        if (roullete < 10) {
-            return 0; // water logged
-        }
-        else if (roullete < 85) {
-            return 1; // humid
-        }
-        else {
-            return 2; // dry
-        }
-    }
-    else if (terrain_type == 1) {
-        if (roullete < 5) {
-            return 0; // water logged
-        }
-        else if (roullete < 15) {
-            return 1; // humid
-        }
-        else {
-            return 2; // dry
-        }
-    }
-    else if (terrain_type == 2) {
-        if (roullete < 10) {
-            return 0; // water logged
-        }
-        else if (roullete < 95) {
-            return 1; // humid
-        }
-        else {
-            return 2; // dry
-        }
-    }
-    else if (terrain_type == 3) {
-        if (roullete < 30) {
-            return 0; // water logged
-        }
-        else if (roullete < 40) {
-            return 1; // humid
-        }
-        else {
-            return 3; // ice
-        }
-    }
-    else if (terrain_type == 4) {
-        if (roullete < 5) {
-            return 0; // water logged
-        }
-        else if (roullete < 95) {
-            return 1; // humid
-        }
-        else {
-            return 3; // ice
-        }
-    }
-    else {
-        std::cout << "error in assign_water" << std::endl;
-    }
-    return 1;
-}
 
-// hardcode buff given to each type of terrain
-int terrain_type_buff_calculator(int terrain) {
-    if (terrain == 0) {
-        return 0;
-    }
-    else if (terrain == 1) {
-        return -1;
-    }
-    else if (terrain == 2) {
-        return 1;
-    }
-    else if (terrain == 3) {
-        return -2;
-    }
-    else if (terrain == 4) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
-}
 
-// initialize food level based on terrain and food type
-int initialize_food_level(int food_type, int terrain_type) {
-    if (food_type == 0) {
-        return 8 + terrain_type_buff_calculator(terrain_type);
-    }
-    else if (food_type == 1) {
-        return 5 + terrain_type_buff_calculator(terrain_type);
-    }
-    else if (food_type == 2) {
-        return 3 + terrain_type_buff_calculator(terrain_type);
-    }
-    else if (food_type == 3) {
-        return 2 + terrain_type_buff_calculator(terrain_type);
-    }
-    else {
-        return 0;
-    }
-}
 
-int assign_food_regen(int food_type) {
-    if (food_type == 0) {
-        return 1;
-    }
-    else if (food_type == 1) {
-        return 1;
-    }
-    else if (food_type == 2) {
-        return 2;
-    }
-    else if (food_type == 3) {
-        return 2;
-    }
-    else {
-        return 0;
-    }
-}
+
+
+
+
 
 
 int main() {
@@ -181,29 +67,13 @@ int main() {
             }
             terrain[x][y][2] = terrain_type; // desert terrain
             terrain[x][y][0] = functions.assign_food(terrain_type);
-            terrain[x][y][1] = assign_water(terrain_type);
+            terrain[x][y][1] = functions.assign_water(terrain_type);
             food_type = terrain[x][y][0];
-            terrain[x][y][3] = initialize_food_level(food_type, terrain_type);
-            terrain[x][y][4] = assign_food_regen(food_type); // food regen counter
+            terrain[x][y][3] = functions.initialize_food_level(food_type, terrain_type);
+            terrain[x][y][4] = functions.assign_food_regen(food_type); // food regen counter
             // std::cout << "After assignment: terrain[" << x << "][" << y << "][0] = " << terrain[x][y][0] << std::endl;
         }
-        // for (unsigned int x = 0; x < terrain_map_size.x;x++) {
-        //     std::cout << terrain[x][0][0] << terrain[x][0][2] << terrain[x][0][3] << terrain[x][0][4] << " ";
-        // }
-        // std::cout << std::endl;
     }
-
-    // printing the holy data
-    // if (go_next_itr == 1) {
-    // std::cout << "food_level " << "max_food_level " << "food_type " << "terrain_type " << std::endl;
-    // for (unsigned int i = 0;i < terrain_map_size.x;i++) {
-    //     for (unsigned int j = 0;j < terrain_map_size.y;j++) {
-    //         std::cout << terrain[i][j][0] << terrain[i][j][2] << terrain[i][j][3] << terrain[i][j][4] << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-    // std::cout << std::endl;
-    // }
 
     // make the main array of creatures and their properties
     // x = creature number, 0 = x_cordinates, 2 = y_cordinates, 3 = food, 4 = water, 5 = health, 6 = age
@@ -297,12 +167,12 @@ int main() {
             for (unsigned int i = 0;i < terrain_map_size.x;i++) {
                 for (unsigned int j = 0;j < terrain_map_size.y;j++) {
                     if (tree_fruit_counter == 1 && (terrain[i][j][0] == 0 || terrain[i][j][0] == 1)) {
-                        if (terrain[i][j][3] < initialize_food_level(terrain[i][j][0], terrain[i][j][2])) {
+                        if (terrain[i][j][3] < functions.initialize_food_level(terrain[i][j][0], terrain[i][j][2])) {
                             terrain[i][j][3] += 1;
                         }
                     }
                     if (bush_fruit_counter == 2 && (terrain[i][j][0] == 2 || terrain[i][j][0] == 3)) {
-                        if (terrain[i][j][3] < initialize_food_level(terrain[i][j][0], terrain[i][j][2])) {
+                        if (terrain[i][j][3] < functions.initialize_food_level(terrain[i][j][0], terrain[i][j][2])) {
                             terrain[i][j][3] += 1;
                         }
                     }
@@ -371,7 +241,7 @@ int main() {
                     // std::cout << ((float)terrain[i][j][3] / (float)initialize_food_level(terrain[i][j][0], terrain[i][j][2])) << std::endl;
                     sf::RectangleShape border(sf::Vector2f(tile_size - 2, tile_size / 8)); // food
                     border.setPosition(i * tile_size + 1, j * tile_size + tile_size - tile_size / 8 - 1);
-                    sf::RectangleShape food(sf::Vector2f((float)(tile_size - 4) * (float)((float)terrain[i][j][3] / (float)initialize_food_level(terrain[i][j][0], terrain[i][j][2])), tile_size / 8 - 3)); // food
+                    sf::RectangleShape food(sf::Vector2f((float)(tile_size - 4) * (float)((float)terrain[i][j][3] / (float)functions.initialize_food_level(terrain[i][j][0], terrain[i][j][2])), tile_size / 8 - 3)); // food
                     food.setPosition(i * tile_size + 2, j * tile_size + tile_size - tile_size / 8);
                     border.setFillColor(sf::Color(255, 255, 255));
                     food.setFillColor(sf::Color(255, 0, 0));
