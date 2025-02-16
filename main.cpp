@@ -2,100 +2,9 @@
 #include <iostream>
 #include <vector>
 #include "textures.h"
+#include "functions.h"
 
 int debugging = 0;
-
-int assign_food(int terrain_type) {
-    if (terrain_type == 0) { // plains
-        if (debugging)
-            std::cout << "assigned plains" << std::endl;
-        int roullete = rand() % 100;
-        if (roullete < 5) {
-            return 0; // Tree
-        }
-        else if (roullete < 10) {
-            return 1; // Tree with fruits
-        }
-        else if (roullete < 25) {
-            return 2; // Bush
-        }
-        else if (roullete < 35) {
-            return 3; // Bush with fruits
-        }
-        else {
-            return 6; // Nothing
-        }
-    }
-    else if (terrain_type == 1) { // desert
-        if (debugging)
-            std::cout << "assigned desert" << std::endl;
-        int roullete = rand() % 100;
-        if (roullete < 10) {
-            return 2; // bush
-        }
-        else if (roullete < 20) {
-            return 3; // bush with fruits (cactus)
-        }
-        else {
-            return 6; // nothing
-        }
-    }
-    else if (terrain_type == 2) { // jungle
-        if (debugging)
-            std::cout << "assigned jungle" << std::endl;
-        int roullete = rand() % 100;
-        if (roullete < 20) {
-            return 0; // Tree
-        }
-        else if (roullete < 35) {
-            return 1; // Tree with fruits
-        }
-        else if (roullete < 55) {
-            return 2; // Bush
-        }
-        else if (roullete < 75) {
-            return 3; // Bush with fruits
-        }
-        else {
-            return 6; // Nothing
-        }
-    }
-    else if (terrain_type == 3) { // snow
-        if (debugging)
-            std::cout << "assigned snow" << std::endl;
-        int roullete = rand() % 100;
-        if (roullete < 7) {
-            return 0; // Tree
-        }
-        else if (roullete < 12) {
-            return 1; // Tree with fruits
-        }
-        else {
-            return 6; // Nothing
-        }
-    }
-    else if (terrain_type == 4) { // hilly
-        if (debugging)
-            std::cout << "assigned hilly" << std::endl;
-        int roullete = rand() % 100;
-        if (roullete < 10) {
-            return 0; // Tree
-        }
-        else if (roullete < 30) {
-            return 1; // Tree with fruits
-        }
-        else if (roullete < 42) {
-            return 3; // Bush with fruits
-        }
-        else {
-            return 6; // Nothing
-        }
-    }
-    else {
-        std::cout << "error in assign_food" << std::endl;
-    }
-    return 6;
-}
 
 int assign_water(int terrain_type) {
     int roullete = rand() % 100;
@@ -232,8 +141,10 @@ int main() {
     else {
         std::cerr << "failed to load terrain_map.png" << std::endl;
     }
-    class textures textures;
+    textures textures;
     textures.Load();
+
+    functions functions;
 
     // Get the terrain map size
     sf::Vector2u terrain_map_size = terrain_map.getSize();
@@ -269,7 +180,7 @@ int main() {
                 std::cout << "miss-colored pixel at: " << x << ", " << y << std::endl;
             }
             terrain[x][y][2] = terrain_type; // desert terrain
-            terrain[x][y][0] = assign_food(terrain_type);
+            terrain[x][y][0] = functions.assign_food(terrain_type);
             terrain[x][y][1] = assign_water(terrain_type);
             food_type = terrain[x][y][0];
             terrain[x][y][3] = initialize_food_level(food_type, terrain_type);
